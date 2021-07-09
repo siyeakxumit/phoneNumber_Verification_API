@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="Input" format="json">
+      <types:shape format="weave" example="examples/inputPhone.json"><![CDATA[%dw 2.0
+
+type Input = {|
+  valid: Boolean, 
+  number: String, 
+  local_format: String, 
+  international_format: String, 
+  country_prefix: String, 
+  country_code: String, 
+  country_name: String, 
+  location: String, 
+  carrier: String, 
+  line_type: String
+|} {"example": "{\\\"valid\\\":true,\\\"number\\\":\\\"14158586273\\\",\\\"local_format\\\":\\\"4158586273\\\",\\\"international_format\\\":\\\"+14158586273\\\",\\\"country_prefix\\\":\\\"+1\\\",\\\"country_code\\\":\\\"US\\\",\\\"country_name\\\":\\\"United States of America\\\",\\\"location\\\":\\\"Novato\\\",\\\"carrier\\\":\\\"AT&T Mobility LLC\\\",\\\"line_type\\\":\\\"mobile\\\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#39e23be5-cc01-491a-9611-c87196610b15">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="Input"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

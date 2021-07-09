@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="craft-phone-validation-api-suite.xml" />
+	<munit:test name="craft-phone-validation-apiFlow-test" doc:id="a8445e1d-4a9e-4983-88db-760b4225622e" >
+		<munit:behavior >
+			<munit-tools:spy doc:name="Spy Matches regex" doc:id="d32090a3-c26d-4031-bcc4-efd36686a52d" processor="validation:matches-regex">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="bba69546-b701-468c-b931-acf48a324072" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="35c64dd4-e374-4125-8f74-b5c80bdccec6" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import craftphonevalidationapiFlowtest::spy_assert_payload4
+---
+spy_assert_payload4::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="bf966a99-875b-4bbd-bff5-599ede234499" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import craftphonevalidationapiFlowtest::spy_assert_payload5
+---
+spy_assert_payload5::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit-tools:spy doc:name="Spy Request" doc:id="ce13bafc-6a78-4592-979b-dd22cca21e8b" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="246d9eb7-7201-4ff7-bb12-1d94458d3964" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="6456662e-a650-4ecf-b180-3c9e1fea8bf2" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import craftphonevalidationapiFlowtest::spy_assert_payload6
+---
+spy_assert_payload6::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="5554658a-4b80-41c7-a668-51c41bfd114a" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import craftphonevalidationapiFlowtest::spy_assert_payload7
+---
+spy_assert_payload7::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit-tools:spy doc:name="Spy insertValidNo" doc:id="3e68bea1-4dab-4ec8-b140-0717672f822c" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="cc6b8276-0a31-458b-b9b8-92ed65c0c5b9" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="44f809cc-6a79-4ae5-9922-3cbda1d383c2" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import craftphonevalidationapiFlowtest::spy_assert_payload8
+---
+spy_assert_payload8::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="afd44dfd-c4f8-4db7-affa-28bff4662f2e" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import craftphonevalidationapiFlowtest::spy_assert_payload9
+---
+spy_assert_payload9::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="92d76bb4-eecc-4f02-9eca-41b106aa8e51" >
+				<munit:payload value="#[readUrl('classpath://craftphonevalidationapiFlowtest\set-event_payload3.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://craftphonevalidationapiFlowtest\set-event_attributes3.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to craft-phone-validation-apiFlow" doc:id="7325ce48-dfe3-4ae8-8cad-232a7e995fbf" name="craft-phone-validation-apiFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="37292eb7-1629-45d3-9fed-ce04bf5826ff" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import craftphonevalidationapiFlowtest::assert_expression_payload3
+---
+assert_expression_payload3::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="c78a0c8f-3a29-42be-a889-cc70f25db15f" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="39e23be5-cc01-491a-9611-c87196610b15" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Matches regex" doc:id="9d75bd21-d35b-41e2-8c2f-9e5edcb9dd42" processor="validation:matches-regex" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="bba69546-b701-468c-b931-acf48a324072" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Request" doc:id="0f199200-1cea-4cc8-ba7a-a9e6abb0746b" processor="http:request" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="246d9eb7-7201-4ff7-bb12-1d94458d3964" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify insertValidNo" doc:id="7daa0361-5891-487f-bc77-dd26162f075f" processor="db:insert" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="cc6b8276-0a31-458b-b9b8-92ed65c0c5b9" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

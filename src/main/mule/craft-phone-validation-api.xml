@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+  xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+  xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+  <validation:config name="Validation_Config" doc:name="Validation Config" doc:id="6fd4f429-dec2-4b75-8154-466844e8d44d" />
+  <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7ffc4659-b3c1-4054-859b-8bdd2ed9104c" >
+    <http:listener-connection host="0.0.0.0" port="${http.port}" >
+			<reconnection failsDeployment="true">
+				<reconnect />
+			</reconnection>
+		</http:listener-connection>
+  </http:listener-config>
+  <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="fecc5d1d-1d74-4129-855c-88919d15ae9c" basePath="/api">
+    <http:request-connection host="${http.host.numverify}" />
+  </http:request-config>
+  <configuration-properties doc:name="Configuration properties" doc:id="039fbb98-0470-4c2a-8e0b-a4d4157727b3" file="dev.properties" />
+	<global-property doc:name="Global Property" doc:id="c27d7ec8-010f-4f91-8ab6-3ffe6aa22d40" name="secure.key" value="Valid" />
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="abf09e01-c753-4e96-8ed0-9151da7413e6" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="craftshopping" />
+	</db:config>
+	<flow name="craft-phone-validation-apiFlow" doc:id="242be39b-ab75-465d-96d4-67cc96b870ac" >
+    <http:listener doc:name="Listener" doc:id="39d83aaf-6183-44c4-9708-ce3afb424ec3" config-ref="HTTP_Listener_config" path="${http.path}"/>
+    <validation:matches-regex doc:name="Matches regex" doc:id="bba69546-b701-468c-b931-acf48a324072" config-ref="Validation_Config" value="#[attributes.queryParams.phoneNumber]" regex="^[0-9]{11}$"/>
+    <logger level="INFO" doc:name="Logger" doc:id="b92128ab-0628-40fb-9ef9-998f2534427c" message="data_recieved"/>
+		<http:request method="GET" doc:name="Request" doc:id="246d9eb7-7201-4ff7-bb12-1d94458d3964" config-ref="HTTP_Request_configuration" path="${http.path}">
+			<http:query-params ><![CDATA[#[output application/java
+---
+
+	{
+  number : attributes.queryParams.phoneNumber,
+  access_key : p('access_key') 
+
+}]]]></http:query-params>
+		</http:request>
+    <ee:transform doc:name="Transform Message" doc:id="39e23be5-cc01-491a-9611-c87196610b15" >
+      <ee:message >
+        <ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+      </ee:message>
+    </ee:transform>
+    <logger level="INFO" doc:name="Logger" doc:id="613a88db-520b-4557-9ea5-5e57afd46475" message="verified"/>
+		<choice doc:name="Choice" doc:id="8163a6f5-eb12-4776-84ac-be1d7c6f18c6" >
+			<when expression="#[payload.valid == true]">
+				<db:insert doc:name="insertValidNo" doc:id="cc6b8276-0a31-458b-b9b8-92ed65c0c5b9" config-ref="Database_Config">
+					<db:sql ><![CDATA[insert into  phone_verification (phoneNumber,country)
+value (:phoneNumber, :country)]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{phoneNumber: payload.number,
+	country: payload.country_name
+}]]]></db:input-parameters>
+				</db:insert>
+			</when>
+			<otherwise>
+				<db:insert doc:name="insertInvalidNo" doc:id="16f738b2-ce33-4479-ba2a-8febdcab1c9e" config-ref="Database_Config">
+					<db:sql ><![CDATA[insert into invalid_number (phoneNumber,country)
+value(:phoneNumber, :country)]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{phoneNumber: payload.number,
+	country: payload.country_name
+}]]]></db:input-parameters>
+				</db:insert>
+			</otherwise>
+		</choice>
+		<ee:transform doc:name="Transform Message" doc:id="7c9c0588-2322-449a-bdc0-13688860ffcd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{msg: "data inserted"}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="8f892b11-096d-412b-856d-565e7844c536" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="1126d34b-01ba-4472-abca-608053a7c2d1" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "format error"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+  
+</flow>
+
+</mule>
